@@ -1,6 +1,21 @@
 <template>
   <div>
-    <input class="border-2 mr-2" type="text" :value="message">
+    <h1>Configuration</h1>
+    <div class="mb-2">
+      <label for="device_id" class="mr-1">Device ID</label>
+    <input class="border-2 w-full text-center" type="text" name="device_id" :value="deviceID">
+    </div>
+    <div class="mb-2">
+      <label for="service_id" class="mr-1">Service ID</label>
+      <input class="border-2 w-full text-center" type="text" name="service_id" :value="serviceID">
+    </div>
+    <div class="mb-2">
+      <label for="char_id" class="mr-1">Characteristic ID</label>
+      <input class="border-2 w-full text-center" type="text" name="char_id" :value="charID" >
+    </div>
+    <hr class="my-4">
+    <label for="msg_text">Text to send:</label>
+    <input class="border-2 mx-2" name="msg_text" type="text" :value="message">
     <input class="p-2 border-r-2 border-solid" type="button" value="Send" @click="sendToPrinter">
     <p class="text-red-400"> {{error}} </p>
   </div>
@@ -13,17 +28,24 @@ export default defineComponent({
   setup() {
     const message = ref('');
     const error = ref('');
-    return { message, error };
+    const deviceID = ref('00001101-0000-1000-8000-00805f9b34fb');
+    const serviceID = ref('000018f0-0000-1000-8000-00805f9b34fb');
+    const charID = ref('00002af1-0000-1000-8000-00805f9b34fb');
+    return {
+      message, error, deviceID, serviceID, charID,
+    };
   },
   methods: {
     async sendToPrinter() {
       try {
         const device = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
+          optionalServices: [this.deviceID],
         });
         const server = await device.gatt?.connect();
-        const service = await server?.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
-        const chars = await service?.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+        console.log(device.uuids);
+        const service = await server?.getPrimaryService(this.serviceID);
+        const chars = await service?.getCharacteristic(this.charID);
         this.printData(chars);
       } catch (err) {
         this.error = err;
