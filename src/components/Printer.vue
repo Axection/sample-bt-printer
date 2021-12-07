@@ -2,7 +2,7 @@
   <div>
     <h1>Configuration</h1>
     <div class="mb-2">
-      <label for="device_id" class="mr-1">Device ID</label>
+      <label for="device_id" class="mr-1">Optional Device ID</label>
     <input class="border-2 w-full text-center" type="text" name="device_id" :value="deviceID">
     </div>
     <div class="mb-2">
